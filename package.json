@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "prestart": "npm run build",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^5.2.2"
+  }
+}

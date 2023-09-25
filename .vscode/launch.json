@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "name": "调试lexer",
+      "program": "${workspaceFolder}/src/simple/lexer.ts",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/built/**/*.js"],
+      "sourceMaps": true
+    }
+  ]
+}
