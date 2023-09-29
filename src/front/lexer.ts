@@ -7,11 +7,9 @@ export enum TokenType {
   Equals,
   Semicolon,
   BinaryOperator,
-  Colon,
   Number,
   OpenParen,
   CloseParen,
-  BOF,
   EOF
 }
 
@@ -20,16 +18,19 @@ export interface Token {
   type: TokenType;
 }
 
-function token({value, type}: Token) {
-  return {value, type};
+const KEYWORDS: Record<string, TokenType> = {
+  const: TokenType.Const
+};
+
+function token({ value, type }: Token) {
+  return { value, type };
 }
 
 export function tokenize(s: string): Token[] {
   const tokens = new Array<Token>();
   let pos = 0;
   let value = '';
-  let type = TokenType.BOF;
-  tokens.push(token({value, type}));
+  let type = TokenType.EOF;
 
   function scan() {
     // 去掉空白字符
@@ -45,10 +46,14 @@ export function tokenize(s: string): Token[] {
       scanForward((c) => /[0-9]/.test(c));
       type = TokenType.Number;
     }
-    // 判断标识符
+    // 判断标识符和关键字
     else if (/[_a-zA-Z]/.test(s.charAt(pos))) {
       scanForward((c) => /[_a-zA-Z]/.test(c));
-      type = TokenType.Identifier;
+      const value = s.slice(start, pos);
+      type =
+        value in KEYWORDS
+          ? KEYWORDS[value as keyof typeof KEYWORDS]
+          : TokenType.Identifier;
     }
     // 判断运算符和其他符号：+，-，*，/，=，；
     else {
@@ -58,9 +63,6 @@ export function tokenize(s: string): Token[] {
           break;
         case ';':
           type = TokenType.Semicolon;
-          break;
-        case ':':
-          type = TokenType.Colon;
           break;
         case '(':
           type = TokenType.OpenParen;
@@ -86,7 +88,7 @@ export function tokenize(s: string): Token[] {
       pos++;
     }
     value = s.slice(start, pos);
-    tokens.push(token({value, type}));
+    tokens.push(token({ value, type }));
   }
 
   function scanForward(pred: (x: string) => boolean) {
@@ -98,5 +100,3 @@ export function tokenize(s: string): Token[] {
   }
   return tokens;
 }
-
-tokenize('const myExpression = 511 - 16*2;');
